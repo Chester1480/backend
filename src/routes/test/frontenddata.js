@@ -47,10 +47,12 @@ module.exports = async function (fastify, options) {
                 jobType:[],
                 jobSkill:[],
                 jobLevel:[],
-                jobLocation:[],
+                jobLocation:'',
                 isRemote:false,
                 isPay:false,//保留欄位 預設
                 phone:faker.phone.phoneNumber() ,
+                postTitle:'test title',
+                postContent:'test content',
                 jobTitle:faker.name.jobTitle(),
                 jobDescription:faker.name.jobArea(),
                 salary:faker.commerce.price(1000, 2000),
@@ -65,15 +67,26 @@ module.exports = async function (fastify, options) {
 
     fastify.post('/createJobDetail', async (request, reply) => {
         const collectioName = 'JobDetail';
-        const data = {
-            jobType:['Freelance','Full-Time','Internship','Part_time'],
-            jobSkills:[],
-            jobType:['Director','Head','Intern','Manager','Mid-Level','Junior'],
-            createTime:Date.now(),
-            editTime:''
-        }
+        const data = [
+            {
+                'Default':{
+                    jobType:['Freelance','Full-Time','Internship','Part_time'],
+                    jobSkills:[],
+                    jobType:['Director','Head','Intern','Manager','Junior','Mid-Level','Senior'],
+                    createTime:Date.now(),
+                    editTime:''
+                },
+                'zh-TW':{
+                    jobType:['自由業','全職','實習','兼職'],
+                    jobSkills:[],
+                    jobType:['經理','主管','實習生','專案經理','初階','中級','資深'],
+                    createTime:Date.now(),
+                    editTime:''
+                },
+            }
+        ]
         datas.push(data);
-        await mongo.insert(collectioName, [data]);
+        await mongo.insert(collectioName, data);
         reply.send('success');
     })
 
