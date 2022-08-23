@@ -14,7 +14,8 @@ module.exports = async function (fastify, options) {
             const account = faker.company.bsBuzz();
             if(datas.indexOf(account) === -1){
                 const data = {
-                    icon:faker.image.avatar(),
+                    icon: faker.image.avatar(),
+                    payOutTime:null,
                     companyName: faker.company.companyName()+' Inc. ',
                     account:faker.company.bsBuzz(),
                     password:hashPassword,
@@ -109,15 +110,21 @@ module.exports = async function (fastify, options) {
         const collectioName = "UserPost";
         let datas = [];
         for (let index = 0; index < count; index++) {
-            const randomCompany = companysInfo[Math.floor(Math.random() * companysInfo.length)]
             const data = {
-                isTop:0,
-                companyName:randomCompany.companyName,
-                mail:randomCompany.mail,
-                link:randomCompany.link,
+                isTop: 0,
+                payOutTime:null,
+                name: faker.name.findName(),
                 phone:faker.phone.phoneNumber(),
-                jobTitle:faker.name.jobTitle(),
-                salary:faker.commerce.price(1000, 2000),
+                mail:aker.email("google.com"),
+                link: '',
+                jobSkill: [],
+                jobType: [],
+                jobSkills: '',
+                jobLocation: '',
+                isRemote:0,
+                description:'description myself',
+                salary: faker.commerce.price(1000, 2000),
+                ip:faker.internet.ipv4,
                 createTime:Date.now(),
                 editTime:''
             }
