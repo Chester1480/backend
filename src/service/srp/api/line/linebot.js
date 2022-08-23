@@ -1,14 +1,10 @@
 const config = require('config');
 const axios = require('axios');
 
-//googlesheet
-const googlesheetENUM = require('../../../../model/enum/googlesheet');
-const googlesheet = require('../googlesheel/googlesheet.js');
-
 // line config
 const lineENUM = require('../../../../model/enum/line.js');
 const basicUrl = config.get('linebot').basicUrl;
-const lineToken = client.login(config.get('lineToken'));
+const lineToken = config.get('lineToken');
 // doc : https://developers.line.biz/zh-hant/docs/messaging-api/sending-messages/
 
 const { mongo } = require('../../../share/database/databasepackage');
