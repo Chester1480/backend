@@ -6,6 +6,7 @@ exports.dayJs = require('../lib/day');
 exports.encryptJs = require('../lib/encrypt');
 exports.faststringifyJs = require('../lib/faststringify');
 exports.fsextraJs = require('../lib/fsextra');
+exports.i18n = require('../lib/i18n');
 exports.logJs = require('../lib/log');
 exports.lrucacheJs = require('../lib/lrucache');
 exports.mathJs = require('../lib/math');
