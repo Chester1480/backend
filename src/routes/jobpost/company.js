@@ -27,7 +27,7 @@ module.exports = async function (fastify, options) {
             }
             return reply.send(response);
         }
-
+        
         //加密
         const hashPassword = await encryptJs.bcryptHash(password);
 

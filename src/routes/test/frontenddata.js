@@ -1,7 +1,9 @@
 const { mongo } = require("../../service/share/database/databasepackage");
+const { encryptJs } = require('../../service/share/lib/libpackage');
 const { faker } = require("@faker-js/faker");
 
 module.exports = async function (fastify, options) {
+    const i18n = fastify.i18n;
 
     fastify.post('/createCompany', async (request, reply) => {
         const { count } = request.body;
@@ -21,7 +23,7 @@ module.exports = async function (fastify, options) {
                     password:hashPassword,
                     companyDescription:faker.company.catchPhraseDescriptor(),
                     status: 1, //0禁用 1啟用
-                    mail:faker.email("google.com"),
+                    mail:faker.internet.email(),
                     ip:faker.internet.ipv4,
                     link:'',
                     createTime:Date.now(),
@@ -37,6 +39,8 @@ module.exports = async function (fastify, options) {
         const { count } = request.body;
         const collectioName = 'CompanyPost';
         const companysInfo = await mongo.find("Company");
+        const jobType = i18n.t('jobType').split(',');
+        const jobLevel = i18n.t('jobLevel').split(',');
         let datas = [];
         for (let index = 0; index < count; index++) {
             const randomCompany = companysInfo[Math.floor(Math.random() * companysInfo.length)]
@@ -45,18 +49,20 @@ module.exports = async function (fastify, options) {
                 companyName:randomCompany.companyName,
                 mail:randomCompany.mail,
                 link:randomCompany.link,
-                jobType:[],
+                jobType:jobType[Math.floor(Math.random() * jobType.length)],
                 jobSkill:[],
-                jobLevel:[],
+                jobLevel:jobLevel[Math.floor(Math.random() * jobLevel.length)],
                 jobLocation:'',
                 isRemote:false,
                 isPay:false,//保留欄位 預設
-                phone:faker.phone.phoneNumber() ,
-                postTitle:'test title',
-                postContent:'test content',
+                phone:faker.phone.number() ,
+                title:'test title',
+                content:'test content',
                 jobTitle:faker.name.jobTitle(),
                 jobDescription:faker.name.jobArea(),
                 salary:faker.commerce.price(1000, 2000),
+                payoutTime:null,
+                payoutAccount:faker.finance.account(),
                 createTime:Date.now(),
                 editTime:''
             }
@@ -66,41 +72,19 @@ module.exports = async function (fastify, options) {
         reply.send('success');
     })
 
-    fastify.post('/createJobDetail', async (request, reply) => {
-        const collectioName = 'JobDetail';
-        const data = [
-                {
-                    key:'Default',
-                    jobType:['Freelance','Full-Time','Internship','Part_time'],
-                    jobSkills:[],
-                    jobLevel:['Director','Head','Intern','Manager','Junior','Mid-Level','Senior'],
-                    createTime:Date.now(),
-                    editTime:''
-                },
-                {
-                    key:'zh-TW',
-                    jobType:['自由業','全職','實習','兼職'],
-                    jobSkills:[],
-                    jobLevel:['經理','主管','實習生','專案經理','初階','中級','資深'],
-                    createTime:Date.now(),
-                    editTime:''
-                },
-        ]
-        datas.push(data);
-        await mongo.insert(collectioName, data);
-        reply.send('success');
-    })
-
     fastify.post('/createAdvertise', async (request, reply) => {
-        const collectioName = "advertise";
+        const { title,cotent } = request.body;
+        const collectioName = "Advertise";
         const data = {
-            jobType:['Freelance','Full-Time','Internship','Part_time'],
-            jobSkills:[],
-            jobType:['Director','Head','Intern','Manager','Mid-Level','Junior'],
+            title,
+            cotent,
+            phone:faker.phone.number() ,
+            mail:faker.internet.email(),
+            payoutTime:null,
+            payoutAccount:faker.finance.account(),
             createTime:Date.now(),
             editTime:''
         }
-        datas.push(data);
         await mongo.insert(collectioName, [data]);
         reply.send('success');
     })
@@ -109,24 +93,25 @@ module.exports = async function (fastify, options) {
         const { count } = request.body;
         const collectioName = "UserPost";
         let datas = [];
+        const jobType = i18n.t('jobType').split(',');
         for (let index = 0; index < count; index++) {
             const data = {
                 isTop: 0,
-                payOutTime:null,
+                payoutTime:null,
+                payoutAccount:faker.finance.account(),
                 name: faker.name.findName(),
                 phone:faker.phone.phoneNumber(),
-                mail:aker.email("google.com"),
+                mail:faker.internet.email(),
                 link: '',
                 jobSkill: [],
-                jobType: [],
-                jobSkills: '',
+                jobType: jobType[Math.floor(Math.random() * jobType.length)],
                 jobLocation: '',
                 isRemote:0,
                 description:'description myself',
                 salary: faker.commerce.price(1000, 2000),
                 ip:faker.internet.ipv4,
                 createTime:Date.now(),
-                editTime:''
+                editTime:null
             }
             datas.push(data);
         }

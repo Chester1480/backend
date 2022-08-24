@@ -4,7 +4,8 @@ const fluent = require('fluent-json-schema');
 const collectioName ='CompanyPost';
 
 module.exports = async function (fastify, options) {
-
+    const i18n = fastify.i18n;
+    
     const createSchema = {
         body: fluent.object()
                 .prop('companyName', fluent.string().minLength(6).maxLength(40).required())
@@ -44,15 +45,15 @@ module.exports = async function (fastify, options) {
 
         if(isInsertsuccess){
             response = {
-                message:'Post成功',
+                message:i18n.t('Add') +  i18n.t('Success'),
                 status:1,
-                code:"1006"
+                data:{}
             }
         }else{
             response = {
-                message:'Post失敗',
+                message:i18n.t('Add') +  i18n.t('Fail'),
                 status:0,
-                code:"1007" //TODO 之後須做個i18n 對應 code 語系
+                data:{}
             }
         }
         reply.send(response);
@@ -77,9 +78,9 @@ module.exports = async function (fastify, options) {
         }
         const isInsertsuccess = await mongo.update(collectioName, data);
         const response = {
-            message:'',
+            message:i18n.t('Edit') +  i18n.t('Success'),
             status:isInsertsuccess,
-            code:''
+            data:{}
         }
         return reply.send(response);
     })
@@ -92,9 +93,8 @@ module.exports = async function (fastify, options) {
         const { _id } = request.query;
         const companyInfo = await getCompanyPost({ _id });
         const response = {
-            message:'查詢成功',
+            message:i18n.t('Inquire') +  i18n.t('Success'),
             status:1,
-            code:'1004',
             data:companyInfo
         }
         return reply.send(response);
@@ -104,9 +104,8 @@ module.exports = async function (fastify, options) {
         const { _id } = request.query;
         const companyInfo = await getCompanyPost({ _id });
         const response = {
-            message:'查詢成功',
+            message:i18n.t('Inquire') +  i18n.t('Success'),
             status:1,
-            code:'1004',
             data:companyInfo
         }
         return reply.send(response);

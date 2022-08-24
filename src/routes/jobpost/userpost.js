@@ -4,6 +4,7 @@ const fluent = require('fluent-json-schema');
 const collectioName ='UserPost';
 
 module.exports = async function (fastify, options) {
+    const i18n = fastify.i18n;
 
     const createSchema = {
         body: fluent.object()
@@ -17,8 +18,9 @@ module.exports = async function (fastify, options) {
 
     fastify.post('/createUserPost',{schema:createSchema}, async (request, reply) => {
         const { companyName,mail,link,jobType,jobSkill,jobLevel,jobLocation,isRemote ,phone,postTitle,jobDescription,salary} = request.body;
-
+        const token= request.headers.token;
         const data = {
+            token,
             isTop:0,//是否至頂
             companyName,
             mail,
@@ -43,15 +45,15 @@ module.exports = async function (fastify, options) {
 
         if(isInsertsuccess){
             response = {
-                message:'Post成功',
+                message:i18n.t('Add') +  i18n.t('Success'),
                 status:1,
-                code:"1006"
+                data:{}
             }
         }else{
             response = {
-                message:'Post失敗',
+                message:i18n.t('Add') +  i18n.t('Fail'),
                 status:0,
-                code:"1007" //TODO 之後須做個i18n 對應 code 語系
+                data:{}
             }
         }
         reply.send(response);
@@ -63,8 +65,7 @@ module.exports = async function (fastify, options) {
 
     fastify.post('/updateUserPost',{schema:updateSchema}, async (request, reply) => {
         const { _id,icon,companyName,companyDescription,mail,link } = request.body;
-
-
+        const token= request.headers.token;
         const data = {
             _id,
             icon,
@@ -76,9 +77,9 @@ module.exports = async function (fastify, options) {
         }
         const isInsertsuccess = await mongo.update(collectioName, data);
         const response = {
-            message:'',
+            message:i18n.t('Edit') +  i18n.t('Success'),
             status:isInsertsuccess,
-            code:''
+            data:{}
         }
         return reply.send(response);
     })
@@ -89,11 +90,11 @@ module.exports = async function (fastify, options) {
 
     fastify.post('/getUserPost',{ schema:getSchema }, async (request, reply) => {
         const { _id } = request.query;
+        const token= request.headers.token;
         const companyInfo = await getCompanyPost({ _id });
         const response = {
-            message:'查詢成功',
+            message: i18n.t('Inquire') +  i18n.t('Success'),
             status:1,
-            code:'1004',
             data:companyInfo
         }
         return reply.send(response);
@@ -101,11 +102,11 @@ module.exports = async function (fastify, options) {
 
     fastify.post('/getUserPostById',{ schema:getSchema }, async (request, reply) => {
         const { _id } = request.query;
+        const token= request.headers.token;
         const userPost = await getCompanyPost({ _id });
         const response = {
-            message:'查詢成功',
+            message:i18n.t('Inquire') +  i18n.t('Success'),
             status:1,
-            code:'1004',
             data:userPost
         }
         return reply.send(response);

@@ -123,6 +123,8 @@ fastify.register(require('./routes/api/Spotify'), { prefix: '/api/Spotify' });
 fastify.register(require('./routes/api/LineBot'), { prefix: '/api/LineBot' });
 
 fastify.register(require('./routes/jobpost/company'), { prefix: '/jobpost/company/' });
+fastify.register(require('./routes/jobpost/auth'), { prefix: '/jobpost/auth' });
+
 
 
 const environment = config.get('environment');
