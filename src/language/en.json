@@ -1,7 +1,18 @@
 {
     "system": "system",
     "keyword": "keyword",
+    "Account":"account",
+    "Success":"success",
+    "Fail":"fail",
+    "Exist":"exist",
+    "IsNotExist":"is not exist",
+    "Register":"register",
+    "Inquire":"inquire",
+    "Add":"add",
+    "Edit":"edit",
+    "Confirm":"confirm",
     "AddSuccess":"Add Success",
+    "AddFail":"Add Fail",
     "jobType":["Freelance","Full-Time","Internship","Part_time"],
     "jobSkills":[],
     "jobLevel":["Director","Head","Intern","Manager","Junior","Mid-Level","Senior"]

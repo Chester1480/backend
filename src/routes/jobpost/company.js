@@ -21,11 +21,11 @@ module.exports = async function (fastify, options) {
 
         if(companyInfo){
             const response = {
-                message:'註冊成功',
-                status:1,
-                code:"0001"
+                message:i18n.t('Account') +  i18n.t('Exist') ,
+                status:false,
+                data:{}
             }
-            reply.send(response);
+            return reply.send(response);
         }
 
         //加密
@@ -46,21 +46,21 @@ module.exports = async function (fastify, options) {
         
         const isInsertsuccess = await mongo.insert(collectioName, [data]);
         let response;
-
+        const register = i18n.t('Register');
         if(isInsertsuccess){
             response = {
-                message:'註冊成功',
-                status:1,
-                code:"0001"
+                message:register +  i18n.t('Success') ,
+                status:true,
+                data:{}
             }
         }else{
             response = {
-                message:'註冊失敗',
-                status:0,
-                code:"0002" //TODO 之後須做個i18n 對應 code 語系
+                message:register +  i18n.t('Fail') ,
+                status:false,
+                data:{}
             }
         }
-        reply.send(response);
+        return reply.send(response);
     })
 
     const updateSchema = {
@@ -73,9 +73,9 @@ module.exports = async function (fastify, options) {
         const companyInfo = await getCompany({_id});
         if(!companyInfo){
             const response = {
-                message:'修改失敗 此帳號不存在',
-                status:0,
-                code:'1003'
+                message:i18n.t('Account') +  i18n.t('IsNotExist') ,
+                status:false,
+                data:{}
             }
             return reply.send(response);
         }
@@ -90,11 +90,22 @@ module.exports = async function (fastify, options) {
             createTime:Date.now(),
         }
         const isInsertsuccess = await mongo.update(collectioName, data);
-        const response = {
-            message:'',
-            status:isInsertsuccess,
-            code:''
+        let response;
+        const editText = i18n.t('Edit');
+        if(isInsertsuccess){
+            response = {
+                message: editText+  i18n.t('Success') ,
+                status:isInsertsuccess,
+                data:{}
+            }
+        }else{
+            response = {
+                message: editText +  i18n.t('Fail') ,
+                status:isInsertsuccess,
+                data:{}
+            }
         }
+       
         return reply.send(response);
     })
     
@@ -106,9 +117,8 @@ module.exports = async function (fastify, options) {
         const { _id } = request.query;
         const companyInfo = await getCompany({ _id });
         const response = {
-            message:'查詢成功',
-            status:1,
-            code:'1004',
+            message:i18n.t('Inquire') +  i18n.t('Success') ,
+            status:false,
             data:companyInfo
         }
         return reply.send(response);
