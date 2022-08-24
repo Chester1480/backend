@@ -1,4 +1,5 @@
 const { mongo } = require("../../service/share/database/databasepackage");
+const fluent = require('fluent-json-schema');
 
 const collectioName ='UserPost';
 

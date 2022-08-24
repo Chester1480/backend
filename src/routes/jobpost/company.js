@@ -1,24 +1,22 @@
 const { mongo } = require("../../service/share/database/databasepackage");
 const { encryptJs } = require('../../service/share/lib/libpackage');
+const fluent = require('fluent-json-schema');
 const collectioName ='Company';
-
 module.exports = async function (fastify, options) {
+    const i18n = fastify.i18n;
 
-   
     const createSchema = {
         body: fluent.object()
                 .prop('companyName', fluent.string().minLength(6).maxLength(40).required())
                 .prop('account', fluent.string().minLength(6).maxLength(40).required())
                 .prop('password', fluent.string().minLength(6).maxLength(30).required())
                 .prop('companyDescription', fluent.string().required())
-                .prop('mail', fluent.format(fluent.FORMATS.EMAIL).required())
-                ,
+                .prop('mail', fluent.string().format(fluent.FORMATS.EMAIL).required()),
     }
 
     fastify.post('/createCompany',{schema:createSchema}, async (request, reply) => {
         const { icon,companyName,account,password,companyDescription,mail,link } = request.body;
         const ip = request.ip;
-
         const companyInfo = await getCompany({account});
 
         if(companyInfo){

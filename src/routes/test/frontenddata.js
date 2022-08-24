@@ -69,22 +69,22 @@ module.exports = async function (fastify, options) {
     fastify.post('/createJobDetail', async (request, reply) => {
         const collectioName = 'JobDetail';
         const data = [
-            {
-                'Default':{
+                {
+                    key:'Default',
                     jobType:['Freelance','Full-Time','Internship','Part_time'],
                     jobSkills:[],
-                    jobType:['Director','Head','Intern','Manager','Junior','Mid-Level','Senior'],
+                    jobLevel:['Director','Head','Intern','Manager','Junior','Mid-Level','Senior'],
                     createTime:Date.now(),
                     editTime:''
                 },
-                'zh-TW':{
+                {
+                    key:'zh-TW',
                     jobType:['自由業','全職','實習','兼職'],
                     jobSkills:[],
-                    jobType:['經理','主管','實習生','專案經理','初階','中級','資深'],
+                    jobLevel:['經理','主管','實習生','專案經理','初階','中級','資深'],
                     createTime:Date.now(),
                     editTime:''
                 },
-            }
         ]
         datas.push(data);
         await mongo.insert(collectioName, data);

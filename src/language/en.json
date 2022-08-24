@@ -1,4 +1,8 @@
 {
     "system": "system",
-    "keyword": "keyword"
+    "keyword": "keyword",
+    "AddSuccess":"Add Success",
+    "jobType":["Freelance","Full-Time","Internship","Part_time"],
+    "jobSkills":[],
+    "jobLevel":["Director","Head","Intern","Manager","Junior","Mid-Level","Senior"]
 }

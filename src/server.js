@@ -37,7 +37,8 @@ const fastifyPlugin = require('fastify-plugin')
 fastify.register(require('fastify-polyglot'), {
   defaultLocale: 'tw',
   locales: {
-    tw: require('./language/zh-tw')
+    tw: require('./language/zh-tw'),
+    en: require('./language/en.json')
   }
 })
 //#endregion
@@ -120,6 +121,8 @@ fastify.register(require('./routes/backend/user'), { prefix: '/backend/user/' })
 //前台用API
 fastify.register(require('./routes/api/Spotify'), { prefix: '/api/Spotify' });
 fastify.register(require('./routes/api/LineBot'), { prefix: '/api/LineBot' });
+
+fastify.register(require('./routes/jobpost/company'), { prefix: '/jobpost/company/' });
 
 
 const environment = config.get('environment');
