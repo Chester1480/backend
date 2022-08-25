@@ -298,6 +298,7 @@ FakesAssemblies/
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 node_modules/
+config/
 package-lock.json
 
 # Typescript v1 declaration files
@@ -397,3 +398,4 @@ Temporary Items
 # Local
 .env
 dist
+
