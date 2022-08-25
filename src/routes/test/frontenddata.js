@@ -119,4 +119,53 @@ module.exports = async function (fastify, options) {
         reply.send('success');
     })
 
+    fastify.post('/createBulletinBoard', async (request, reply) => {
+        const collectioName = "BulletinBoard";
+        let datas = [
+            {
+                url:'',
+                title:'跑馬燈',
+                content:'BulletinBoard BulletinBoard BulletinBoard BulletinBoard BulletinBoard BulletinBoard BulletinBoard',
+                type:1, //0一般公告 1跑馬燈 2其他行事公告
+                sort:0,//排序 + 時間 
+                createTime:Date.now(),
+            },
+            {
+                url:'',
+                title:'跑馬燈2',
+                content:'BulletinBoard2',
+                type:1, 
+                sort:1,
+                createTime:Date.now(),
+            },
+            {
+                url:'',
+                title:'一般公告',
+                content:'123456789123456789',
+                type:0,
+                sort:1,
+                createTime:Date.now(),
+            },
+            {
+                url:'',
+                title:'一般公告2',
+                content:'555555558888884444442222222111111',
+                type:0,
+                sort:1,
+                createTime:Date.now(),
+            },
+            {
+                url:'',
+                title:'公告',
+                content:'系統公告 於8/26維修中',
+                type:2,
+                sort:0,
+                createTime:Date.now(),
+            },
+        ];
+       
+        await mongo.insert(collectioName, datas);
+        reply.send('success');
+    })
+
 }
