@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const secret = "theSSSSS";
+const secret = config.get('jwt').secret;
 const { encryptJs } = require('../../share/lib/libpackage');
 const { response } = require('../../../model/shareModel');
 const user = require('../../mongodb/user');
