@@ -11,21 +11,61 @@ module.exports = async function (fastify, options) {
         const { _id } = request.query;
         let bulletinBoard = {};
         if(id){
-            BulletinBoard = await getCompanyPost({ _id });
+            bulletinBoard = await getCompanyPost({ _id });
         }else{
-            BulletinBoard = await getCompanyPost({});
+            bulletinBoard = await getCompanyPost({});
+        }
+        const normals = [];
+        const scrolls = [];
+        const others = [];
+        for(let item of BulletinBoard){
+            switch(item.type){
+                //0一般公告 1跑馬燈 2其他行事公告
+                case 0:
+                        normals.push(item);
+                    break;
+                case 1:
+                        scrolls.push(item);
+                    break;
+                case 2:
+                        others.push(item);
+                    break;
+            }
+        }
+        const data = {
+            normals,
+            scrolls,
+            others,
         }
 
         const response = {
             message:i18n.t('Inquire') +  i18n.t('Success'),
             status:1,
-            data:BulletinBoard
+            data
         }
         return reply.send(response);
     });
 
-    fastify.get('/getScroll', async (request, reply) => {
-
+    const getBoardByTypeSchema = {
+        body: fluent.object()
+                .prop('type', fluent.number().minimum(0).maximum(2).required())
+                ,
+    }
+    
+    fastify.get('/getBoardByType',{schema:getBoardByTypeSchema}, async (request, reply) => {
+        const { _id , type } = request.query;
+        let scrolls;
+        if(id){
+            scrolls = await getCompanyPost({ _id , type});
+        }else{
+            scrolls = await getCompanyPost({type});
+        }
+        const response = {
+            message:i18n.t('Inquire') +  i18n.t('Success'),
+            status:1,
+            data:scrolls
+        }
+        return reply.send(response);
     });
 
 }

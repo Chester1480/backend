@@ -124,6 +124,7 @@ fastify.register(require('./routes/api/LineBot'), { prefix: '/api/LineBot' });
 
 fastify.register(require('./routes/jobpost/company'), { prefix: '/jobpost/company/' });
 fastify.register(require('./routes/jobpost/auth'), { prefix: '/jobpost/auth' });
+fastify.register(require('./routes/jobpost/bulletinboard'), { prefix: '/jobpost/bulletinboard' });
 
 
 
