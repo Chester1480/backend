@@ -11,6 +11,8 @@
     "Add":"新增",
     "Edit":"修改",
     "Confirm":"確認",
+    "Password":"密碼",
+    "PasswordIsNotSame":"確認密碼不一致",
     "AddSuccess":"新增成功",
     "AddFail":"新增失敗",
     "jobType":"自由業,全職,實習,兼職",

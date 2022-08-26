@@ -11,6 +11,8 @@
     "Add":"add",
     "Edit":"edit",
     "Confirm":"confirm",
+    "Password":"password",
+    "PasswordIsNotSame":"password is not same",
     "AddSuccess":"Add Success",
     "AddFail":"Add Fail",
     "jobType":"Freelance,Full-Time,Internship,Part_time",
