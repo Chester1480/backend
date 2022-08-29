@@ -1,4 +1,5 @@
 {
+    "Login": "login",
     "system": "system",
     "keyword": "keyword",
     "Account":"account",
@@ -6,6 +7,8 @@
     "Fail":"fail",
     "Exist":"exist",
     "IsNotExist":"is not exist",
+    "IsCorrect":"is correct",
+    "IsNotCorrect":"is not correct",
     "Register":"register",
     "Inquire":"inquire",
     "Add":"add",

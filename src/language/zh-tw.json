@@ -1,4 +1,5 @@
 {
+    "Login": "登入",
     "system": "系統",
     "keyword": "關鍵字",
     "Account":"帳號",
@@ -6,6 +7,8 @@
     "Fail":"失敗",
     "Exist":"已存在",
     "IsNotExist":"不存在",
+    "IsCorrect":"正確",
+    "IsNotCorrect":"不正確",
     "Register":"註冊",
     "Inquire":"查詢",
     "Add":"新增",

@@ -2,6 +2,8 @@ const { mongo } = require("../../service/share/database/databasepackage");
 const { encryptJs } = require('../../service/share/lib/libpackage');
 const fluent = require('fluent-json-schema');
 
+const { jwtverify , exportJwtsignfy } = require('../../service/srp/auth/auth');
+
 const collectioName ='Company';
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
@@ -83,31 +85,41 @@ module.exports = async function (fastify, options) {
 
         const companyInfo = await mongo.findOne(collectioName, {account});
 
-        const hashPassword = await encryptJs.bcryptHash(password);
-        const isPass = encryptJs.bcrypCompareSync(hashPassword,companyInfo.password);
-
-        
-        if(!isPass){//密碼不正確
-            response = {
-                message:i18n.t('Register') +  i18n.t('Fail') ,
+        if(!companyInfo){ //帳號不存在
+            const response = {
+                message:i18n.t('Account') +  i18n.t('IsNotExist') ,
                 status:false,
                 data:{}
             }
             return reply.send(response);
         }
-        
 
-        
+        const hashPassword = await encryptJs.bcryptHash(password);
+        const isPass = encryptJs.bcrypCompareSync(hashPassword,companyInfo.password);
 
-        // if(companyInfo){ //帳號已存在
-        //     const response = {
-        //         message:i18n.t('Account') +  i18n.t('Exist') ,
-        //         status:false,
-        //         data:{}
-        //     }
-        //     return reply.send(response);
-        // }
+        if(!isPass){//密碼不正確
+            response = {
+                message:i18n.t('Login') +  i18n.t('Fail') + i18n.t('Password') +i18n.t('IsNotCorrect') ,
+                status:false,
+                data:{}
+            }
+            return reply.send(response);
+        }
 
+        const userData = {
+            ...companyInfo
+        }
+        delete userData.password;  
+
+        const jwt = await exportJwtsignfy(userData);
+
+        response = {
+            message:i18n.t('Login') +  i18n.t('Success') ,
+            status:true,
+            data:jwt
+        }
+
+        return reply.send(response);
     })
 
     const createSchema = {
