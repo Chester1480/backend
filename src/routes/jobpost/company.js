@@ -76,11 +76,19 @@ module.exports = async function (fastify, options) {
         return reply.send(response);
     })
 
+    // email發送測試用
     fastify.post('/sendMail', async (request, reply) => {
-        const toEmail = 'chester0148@gmail.com';
-        const subject ='這是 node.js 發送的測試信件';
-        const html ='<h2>測試</h2>';
-        await sendMail(toEmail,subject,html);
+        const config = require('config');
+        const secretKey = config.get('jwt').secret;
+
+        const hashData = await encryptJs.encryptAES('data',secretKey);
+        const reciverData = await encryptJs.decryptAES(hashData,secretKey);
+        // const toEmail = 'chester0148@gmail.com';
+        // const subject ='這是 node.js 發送的測試信件';
+        const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
+        console.log(url);
+        // const html ='<h2>測試</h2>';
+        // await sendMail(toEmail,subject,html);
         return reply.send('Success')
     })
 
@@ -108,6 +116,14 @@ module.exports = async function (fastify, options) {
         }
         await nodemailerJs.sendMail(parameters);
     }
+
+    const verifyCodeSchema = {
+        query: fluent.object().prop('code', fluent.string().required()),
+    }
+
+    fastify.post('/verifyCode',{schema:verifyCodeSchema}, async (request, reply) => {
+        const { code } = request.query;
+    })
 
     const loginSchema = {
         body: fluent.object().prop('account', fluent.string().minLength(6).maxLength(40).required())

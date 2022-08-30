@@ -2,8 +2,9 @@
 const bcrypt = require('bcryptjs');
 const AES = require("crypto-js/aes");
 const SHA256 = require("crypto-js/sha256");
-const bcryptjs = require("crypto-js");
+const crypto = require("crypto-js");
 const md5 = require('md5');
+
 
 //md5
 exports.md5Hash = async function (source) {
