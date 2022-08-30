@@ -1,6 +1,7 @@
 const { mongo } = require("../../service/share/database/databasepackage");
-const { encryptJs } = require('../../service/share/lib/libpackage');
+const { encryptJs,nodemailerJs } = require('../../service/share/lib/libpackage');
 const fluent = require('fluent-json-schema');
+const config = require('config');
 
 const { jwtverify , exportJwtsignfy } = require('../../service/srp/auth/auth');
 
@@ -74,6 +75,39 @@ module.exports = async function (fastify, options) {
 
         return reply.send(response);
     })
+
+    fastify.post('/sendMail', async (request, reply) => {
+        const toEmail = 'chester0148@gmail.com';
+        const subject ='這是 node.js 發送的測試信件';
+        const html ='<h2>測試</h2>';
+        await sendMail(toEmail,subject,html);
+        return reply.send('Success')
+    })
+
+    const sendMail = async(toEmail,subject,html) =>{
+        const parameters = {
+            options:{
+                from: config.get('Gmail').Account,
+                to: toEmail, 
+                subject,
+                html,
+                // subject: '這是 node.js 發送的測試信件',
+                // html: '<h2>Why and How</h2>'
+            },
+            service:'Gmail',
+            auth:{
+                // address:              'smtp.gmail.com',
+                // port:                 587,
+                // domain:               'gmail.com',
+                // user_name:            'YOUR_USERNAME@gmail.com',
+                // password:             'YOUR_PASSWORD',
+                // authentication:       'plain'
+                user: config.get('Gmail').Account,
+                pass: config.get('Gmail').Password,
+            }
+        }
+        await nodemailerJs.sendMail(parameters);
+    }
 
     const loginSchema = {
         body: fluent.object().prop('account', fluent.string().minLength(6).maxLength(40).required())

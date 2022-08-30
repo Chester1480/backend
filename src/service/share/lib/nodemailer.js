@@ -28,26 +28,30 @@ var nodemailer = require('nodemailer');
 // };
 //#endregion
 exports.sendMail = async (parameters) => {
-    const { options,service , auth } = parameters;
+    return new Promise((resolve, reject) => {
+        const { options , service , auth } = parameters;
 
-    //宣告發信物件
-    var transporter = nodemailer.createTransport({
-        service, //'Gmail'
-        auth,
-        // auth: {
-        //     user: 'account@gmail.com',
-        //     pass: 'yourpassword'
-        // }
-    });
+        //宣告發信物件
+        var transporter = nodemailer.createTransport({
+            service, //'Gmail'
+            auth,
+            // auth: {
+            //     user: 'account@gmail.com',
+            //     pass: 'yourpassword'
+            // }
+        });
 
-    //發送信件方法
-    transporter.sendMail(options, function(error, info){
-        if(error){
-            console.log(error);
-        }else{
-            console.log('訊息發送: ' + info.response);
-        }
-    });
+        //發送信件方法
+        transporter.sendMail(options, function(error, info){
+            if(error){
+                reject(false);
+                console.log(error);
+            }else{
+                resolve(true);
+                console.log('訊息發送: ' + info.response);
+            }
+        });
+    })
 }
 
 
