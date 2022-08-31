@@ -25,7 +25,7 @@ module.exports = async function (fastify, options) {
                     status: 1, //0禁用 1啟用
                     mail:faker.internet.email(),
                     ip:faker.internet.ipv4,
-                    isValid:false,
+                    isValid:true,
                     link:'',
                     createTime:Date.now(),
                 }

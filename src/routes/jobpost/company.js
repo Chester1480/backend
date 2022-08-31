@@ -1,11 +1,14 @@
 const { mongo } = require("../../service/share/database/databasepackage");
 const { encryptJs,nodemailerJs } = require('../../service/share/lib/libpackage');
 const fluent = require('fluent-json-schema');
-const config = require('config');
-
 const { jwtverify , exportJwtsignfy } = require('../../service/srp/auth/auth');
 
+const config = require('config');
+const secretKey = config.get('jwt').secret;
+const gmailConfig = config.get('Gmail')
+
 const collectioName ='Company';
+
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
 
@@ -19,7 +22,7 @@ module.exports = async function (fastify, options) {
     }
 
     fastify.post('/registerCompany',{schema:registerSchema}, async (request, reply) => {
-        const { companyName , account ,password ,confirmPassword,mail,icon,companyDescription,link} = request.body;
+        const { companyName,mail,password ,confirmPassword,icon,companyDescription,link } = request.body;
         const ip  = request.ip;
 
         if(password !== confirmPassword){ //密碼不一致
@@ -31,7 +34,7 @@ module.exports = async function (fastify, options) {
             return reply.send(response);
         }
 
-        const companyInfo = await mongo.findOne(collectioName, {account});
+        const companyInfo = await mongo.findOne(collectioName, {mail});
         if(companyInfo){ //帳號已存在
             const response = {
                 message:i18n.t('Account') +  i18n.t('Exist') ,
@@ -46,17 +49,25 @@ module.exports = async function (fastify, options) {
             icon,//設定default
             payOutTime:null,
             companyName,
-            account,
+            mail,
             password:hashPassword,
             companyDescription,
             status:1,
-            mail,
+            isValid:false,
             ip,
             link,
             createTime:Date.now()
         }
 
         const isInsertsuccess = await mongo.insert(collectioName, [data]);
+
+        const parameters = {
+            data,
+            expiredTime:Date.now()
+        }
+        const hashData = await encryptJs.encryptAES(parameters,secretKey);
+        const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
+        await sendMail(mail,'驗證帳號信件',url);
 
         let response ;
         if(isInsertsuccess){
@@ -76,10 +87,25 @@ module.exports = async function (fastify, options) {
         return reply.send(response);
     })
 
+    // const genVerifyCodeUrl = async(userInfo)=> {
+    //     const data = {
+    //         userInfo,
+    //         expiredTime:Date.now()
+    //     }
+    //     const hashData = await encryptJs.encryptAES(data,secretKey);
+    //     const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
+    //     return url;
+    // }
+
     // email發送測試用
     fastify.post('/sendMail', async (request, reply) => {
-        const config = require('config');
-        const secretKey = config.get('jwt').secret;
+      
+        const data = {
+            userInfo:{
+                
+            },
+            expirationTime:Date.now()
+        }
 
         const hashData = await encryptJs.encryptAES('data',secretKey);
         const reciverData = await encryptJs.decryptAES(hashData,secretKey);
@@ -95,7 +121,7 @@ module.exports = async function (fastify, options) {
     const sendMail = async(toEmail,subject,html) =>{
         const parameters = {
             options:{
-                from: config.get('Gmail').Account,
+                from: gmailConfig.Account,
                 to: toEmail, 
                 subject,
                 html,
@@ -110,8 +136,8 @@ module.exports = async function (fastify, options) {
                 // user_name:            'YOUR_USERNAME@gmail.com',
                 // password:             'YOUR_PASSWORD',
                 // authentication:       'plain'
-                user: config.get('Gmail').Account,
-                pass: config.get('Gmail').Password,
+                user: gmailConfig.Account,
+                pass: gmailConfig.Password,
             }
         }
         await nodemailerJs.sendMail(parameters);
