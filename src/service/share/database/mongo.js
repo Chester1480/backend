@@ -194,7 +194,7 @@ exports.insert = async function (collectionName, data) {
 
 }
 
-exports.update = async function (collectionName , updateData) {
+exports.updateOne = async function (collectionName ,colunmName ,updateData) {
 
     const client = await mongoClient.connect(url, { useNewUrlParser: true }).catch(err => { console.log(err); });
     if (!client) {
@@ -203,7 +203,7 @@ exports.update = async function (collectionName , updateData) {
     try {
         const db = client.db(dbName);
         let collection = db.collection(collectionName);
-        let res = await collection.updateOne(updateData, { upsert: false });
+        let res = await collection.updateOne(colunmName, {'$set': updateData }, { upsert: false });
         return res;
     } catch (err) {
 

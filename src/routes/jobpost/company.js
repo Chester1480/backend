@@ -1,5 +1,5 @@
 const { mongo } = require("../../service/share/database/databasepackage");
-const { encryptJs,nodemailerJs } = require('../../service/share/lib/libpackage');
+const { encryptJs,nodemailerJs,momentJs } = require('../../service/share/lib/libpackage');
 const fluent = require('fluent-json-schema');
 const { jwtverify , exportJwtsignfy } = require('../../service/srp/auth/auth');
 
@@ -7,7 +7,7 @@ const config = require('config');
 const secretKey = config.get('jwt').secret;
 const gmailConfig = config.get('Gmail')
 
-const collectioName ='Company';
+const collectionName ='Company';
 
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
@@ -34,7 +34,7 @@ module.exports = async function (fastify, options) {
             return reply.send(response);
         }
 
-        const companyInfo = await mongo.findOne(collectioName, {mail});
+        const companyInfo = await mongo.findOne(collectionName, {mail});
         if(companyInfo){ //帳號已存在
             const response = {
                 message:i18n.t('Account') +  i18n.t('Exist') ,
@@ -56,14 +56,14 @@ module.exports = async function (fastify, options) {
             isValid:false,
             ip,
             link,
-            createTime:Date.now()
+            createTime:momentJs.getNowTime()
         }
 
-        const isInsertsuccess = await mongo.insert(collectioName, [data]);
+        const isInsertsuccess = await mongo.insert(collectionName, [data]);
 
         const parameters = {
             data,
-            expiredTime:Date.now()
+            expiredTime:momentJs.getNowTime()
         }
         const hashData = await encryptJs.encryptAES(parameters,secretKey);
         const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
@@ -98,21 +98,29 @@ module.exports = async function (fastify, options) {
     // }
 
     // email發送測試用
-    fastify.post('/sendMail', async (request, reply) => {
+    fastify.post('/test', async (request, reply) => {
       
-        const data = {
-            userInfo:{
-                
-            },
-            expirationTime:Date.now()
-        }
+        //const test = await momentJs.minutes('2022-08-31 11:10:20','2022-08-31 11:20:20');
 
-        const hashData = await encryptJs.encryptAES('data',secretKey);
-        const reciverData = await encryptJs.decryptAES(hashData,secretKey);
-        // const toEmail = 'chester0148@gmail.com';
-        // const subject ='這是 node.js 發送的測試信件';
-        const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
-        console.log(url);
+        //console.log(test);
+        // momentJs
+        // const data = {
+        //     userInfo:{
+                
+        //     },
+        //     expirationTime:Date.now()
+        // }
+
+        // let hashData = await encryptJs.encryptAES('data',secretKey);
+        // hashData ='1111222';
+        // const decryptData = await encryptJs.decryptAES(hashData,secretKey);
+        // if(decryptData){
+        //     console.log('decryptData: ',decryptData);
+        // }
+
+        // // const toEmail = 'chester0148@gmail.com';
+        // // const subject ='這是 node.js 發送的測試信件';
+        // const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
         // const html ='<h2>測試</h2>';
         // await sendMail(toEmail,subject,html);
         return reply.send('Success')
@@ -143,12 +151,57 @@ module.exports = async function (fastify, options) {
         await nodemailerJs.sendMail(parameters);
     }
 
+    const genVerifyCodeSchema = {
+        query: fluent.object().prop('mail', fluent.string().format(fluent.FORMATS.EMAIL).required()),
+    }
+
+    fastify.post('/genVerifyCode',{schema:genVerifyCodeSchema}, async (request, reply) => {
+        const { mail } = request.query;
+       
+    })
+
     const verifyCodeSchema = {
         query: fluent.object().prop('code', fluent.string().required()),
     }
 
     fastify.post('/verifyCode',{schema:verifyCodeSchema}, async (request, reply) => {
         const { code } = request.query;
+        const decryptData = await encryptJs.decryptAES(code,secretKey);
+        if(!decryptData) return reply.send({
+            message: '驗證碼無效', //TODO 需要多國語系
+            status:false,
+            data:{}
+        }); //驗證錯誤
+
+        const { data , expiredTime } = decryptData;
+
+        if(expiredTime){
+            const nowTime = await momentJs.getNowTime();
+            const totalMinutes = await momentJs.minutes(expiredTime,nowTime);
+            if(totalMinutes>10){//驗證錯誤 超過十分 連結過期
+                return reply.send({
+                    message: '驗證碼無效', //TODO 需要多國語系
+                    status:false,
+                    data:{}
+                }); 
+            }
+        }
+        const userData = await encryptJs.decryptAES(data,secretKey);
+        //更新狀態
+        const isUpdate = await mongo.updateOne(collectionName ,{ mail:userData.mail } ,{isValid:true})
+        if(isUpdate){
+            return reply.send({
+                message: '更新成功', //TODO 需要多國語系
+                status:true,
+                data:{}
+            }); 
+        }else{
+            return reply.send({
+                message: '更新失敗', //TODO 需要多國語系
+                status:false,
+                data:{}
+            }); 
+        }
     })
 
     const loginSchema = {
@@ -159,7 +212,7 @@ module.exports = async function (fastify, options) {
     fastify.post('/loginCompany',{schema:loginSchema}, async (request, reply) => {
         const { account,password } = request.body;
 
-        const companyInfo = await mongo.findOne(collectioName, {account});
+        const companyInfo = await mongo.findOne(collectionName, {account});
 
         if(!companyInfo){ //帳號不存在
             const response = {
@@ -237,7 +290,7 @@ module.exports = async function (fastify, options) {
             createTime:Date.now(),
         }
         
-        const isInsertsuccess = await mongo.insert(collectioName, [data]);
+        const isInsertsuccess = await mongo.insert(collectionName, [data]);
         let response;
         const register = i18n.t('Register');
         if(isInsertsuccess){
@@ -282,7 +335,7 @@ module.exports = async function (fastify, options) {
             link,
             createTime:Date.now(),
         }
-        const isInsertsuccess = await mongo.update(collectioName, data);
+        const isInsertsuccess = await mongo.updateOne(collectionName, data);
         let response;
         const editText = i18n.t('Edit');
         if(isInsertsuccess){
@@ -318,7 +371,7 @@ module.exports = async function (fastify, options) {
     })
 
     const getCompany = async ( parameters ) =>{
-        const companyInfo = await mongo.findOne(collectioName,parameters);
+        const companyInfo = await mongo.findOne(collectionName,parameters);
         return companyInfo;
     }
    
