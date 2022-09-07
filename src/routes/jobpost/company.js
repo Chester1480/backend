@@ -9,8 +9,19 @@ const gmailConfig = config.get('Gmail')
 
 const collectionName ='Company';
 
+
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
+
+
+    fastify.post('/updateCompanyIcon', async (request, reply) => {
+        // const {test} = request.fields;
+        // console.log(test);
+        const data = await request.file();
+        const fields = data.fields;
+        console.log(fields)
+        return reply.send('11');
+    })
 
     const registerSchema = {
         body: fluent.object().prop('companyName', fluent.string().minLength(6).maxLength(40).required())
@@ -45,8 +56,14 @@ module.exports = async function (fastify, options) {
         }
         const hashPassword = await encryptJs.bcryptHash(password);
 
+        if(!icon){
+            // icon = default pic
+        }
+
         const data = {
-            icon,//設定default
+            icon,//創建時設定default
+            companyPhoto:[],//公司環境照片
+            companyPruductPhoto:[],//公司產品照片
             payOutTime:null,
             companyName,
             mail,

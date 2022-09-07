@@ -17,9 +17,10 @@ module.exports = async function (fastify, options) {
             if(datas.indexOf(account) === -1){
                 const data = {
                     icon: faker.image.avatar(),
+                    companyPhoto:[],//公司環境照片
+                    companyPruductPhoto:[],//公司產品照片
                     payOutTime:null,
                     companyName: faker.company.companyName()+' Inc. ',
-                    account:faker.company.bsBuzz(),
                     password:hashPassword,
                     companyDescription:faker.company.catchPhraseDescriptor(),
                     status: 1, //0禁用 1啟用
@@ -27,6 +28,7 @@ module.exports = async function (fastify, options) {
                     ip:faker.internet.ipv4,
                     isValid:true,
                     link:'',
+                    companyPhoto:null,
                     createTime:Date.now(),
                 }
                 datas.push(data);
@@ -63,7 +65,6 @@ module.exports = async function (fastify, options) {
                 jobDescription:faker.name.jobArea(),
                 salary:faker.commerce.price(1000, 2000),
                 payoutTime:null,
-                payoutAccount:faker.finance.account(),
                 createTime:Date.now(),
                 editTime:''
             }
@@ -82,7 +83,6 @@ module.exports = async function (fastify, options) {
             phone:faker.phone.number() ,
             mail:faker.internet.email(),
             payoutTime:null,
-            payoutAccount:faker.finance.account(),
             createTime:Date.now(),
             editTime:''
         }
