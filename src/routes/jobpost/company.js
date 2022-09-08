@@ -14,12 +14,39 @@ module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
 
 
-    fastify.post('/updateCompanyIcon', async (request, reply) => {
-        // const {test} = request.fields;
-        // console.log(test);
+    // const schema = {
+    //     body: bodyJsonSchema,
+    //     querystring: queryStringJsonSchema, // (或) query: queryStringJsonSchema
+    //     params: paramsJsonSchema, //formdata 場合可以使用
+    //     headers: headersJsonSchema
+    // }
+
+    const updateCompanyIconSchma = {
+        // params: fluent.object().prop('companyName', fluent.string().minLength(6).maxLength(40).required())
+                            // .prop('account', fluent.string().minLength(6).maxLength(40).required())
+                            // .prop('password', fluent.string().minLength(6).maxLength(30).required())
+                            // .prop('confirmPassword', fluent.string().minLength(6).maxLength(30).required())
+                            // .prop('companyDescription', fluent.string().required())
+                            // .prop('mail', fluent.string().format(fluent.FORMATS.EMAIL).required()),
+    }
+
+    fastify.post('/updateCompanyIcon',{schema:updateCompanyIconSchma}, async (request, reply) => {
         const data = await request.file();
-        const fields = data.fields;
-        console.log(fields)
+        const fields = Object.keys(data.fields);
+        const content = request;
+        console.log(content)
+        // console.log(fields)
+        // fields.forEach(field => {
+        //     //field.fieldname
+        //     //field.filename
+        //     //field.mimetype mimetype: 'image/webp',
+        //     // if(field.mimetype.split('/')[0] === 'image'){ //[1] jpeg
+        //     //     console.log(data.fields[field].file)
+        //     // }
+        // });
+        //const {icon1,icon2} = data.fields;
+        //console.log(data.fields);
+        
         return reply.send('11');
     })
 

@@ -27,7 +27,7 @@ const fastify = require('fastify')({
 });
 //#endregion
 const fastifyPlugin = require('fastify-plugin')
-fastify.register(require('fastify-multipart'))
+fastify.register(require('fastify-multipart'), { attachFieldsToBody: true })
 
 //#region  redis
 // redis https://github.com/fastify/fastify-redis
