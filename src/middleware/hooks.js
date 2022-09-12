@@ -49,10 +49,19 @@ module.exports = async function (fastify, options) {
     // console.log(await osLocale());// zh-CN 可以得知 系統使用的語言
     // #endregion
     try {
+      await middleware(request, reply); // middleware 先處理 過濾IP , 分析資料 等工作
+      
       const apiPrefix = requestUrl[1];
+      const routeFunction = requestUrl[3];
+      if(apiPrefix === "jobpost"){
+        //登入 註冊 不需要token驗證
+        if(routeFunction !=="registerCompany" || routeFunction !=="loginCompany"){
+          console.log(url);
+        }
+      }
       // if(apiPrefix !== "assets"){
       //   const apiName = requestUrl[2];
-      //   await middleware(request, reply); // middleware 先處理 過濾IP , 分析資料 等工作
+        
       //   if(apiPrefix ==="backend"){
       //     const { path } = request.query;
       //     if(path){

@@ -2,6 +2,8 @@ const config = require('config');
 const osLocale = require('os-locale'); //可以查看user 系統語系
 const cluster = require('cluster');
 const cpuInfo = require('os').cpus();
+const environment = config.get('environment');
+
 
 // 排程
 // const nodeSchedule = require('./service/schedule/nodeschedule/nodeschedule.js');
@@ -27,7 +29,7 @@ const fastify = require('fastify')({
 });
 //#endregion
 const fastifyPlugin = require('fastify-plugin')
-fastify.register(require('fastify-multipart'), { attachFieldsToBody: true })
+fastify.register(require('fastify-multipart'))
 
 //#region  redis
 // redis https://github.com/fastify/fastify-redis
@@ -107,6 +109,7 @@ fastify.register(require('./routes/index'), { prefix: '/check' });
 fastify.register(require('./routes/public/Login'), { prefix: '/Login' });
 fastify.register(require('./routes/public/Register'), { prefix: '/Register' });
 
+//#region 後台用API
 fastify.register(require('./routes/backend/index'), { prefix: '/' });
 fastify.register(require('./routes/backend/index'), { prefix: '/backend/index' });
 fastify.register(require('./routes/backend/index'), { prefix: '/backend/index/auth' });
@@ -118,21 +121,22 @@ fastify.register(require('./routes/backend/admin'), { prefix: '/backend/admin' }
 fastify.register(require('./routes/backend/user'), { prefix: '/backend/user/' });
 // fastify.register(require('./routes/backend/login'), { prefix: '/backend/login/register' });
 // fastify.register(require('./routes/backend/page'), { prefix: '/backend/page' });
+//#endregion
 
-//前台用API
+//#region 前台用API
 fastify.register(require('./routes/api/Spotify'), { prefix: '/api/Spotify' });
 fastify.register(require('./routes/api/LineBot'), { prefix: '/api/LineBot' });
-
+//jobpost
 fastify.register(require('./routes/jobpost/company'), { prefix: '/jobpost/company/' });
 fastify.register(require('./routes/jobpost/auth'), { prefix: '/jobpost/auth' });
 fastify.register(require('./routes/jobpost/bulletinboard'), { prefix: '/jobpost/bulletinboard' });
+//#endregion
 
-
-
-const environment = config.get('environment');
-if (environment != 'prod') { //產生測試環境用資料
-  fastify.register(require('./routes/test/data'), { prefix: '/test/data' });
-  fastify.register(require('./routes/test/frontenddata'), { prefix: '/test/frontenddata' });
+//測試環境才能用
+if (environment != 'prod') { 
+  fastify.register(require('./routes/jobpost/test'), { prefix: '/jobpost/test' });//測試用路由
+  fastify.register(require('./routes/test/data'), { prefix: '/test/data' });//產生測試環境用資料
+  fastify.register(require('./routes/test/frontenddata'), { prefix: '/test/frontenddata' });//產生測試環境用資料
 }
 
 fastify.after((error) => error ? console.log(error) : 'success');
