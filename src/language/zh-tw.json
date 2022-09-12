@@ -18,7 +18,10 @@
     "PasswordIsNotSame":"確認密碼不一致",
     "AddSuccess":"新增成功",
     "AddFail":"新增失敗",
+    "Empty":"空值",
     "jobType":"自由業,全職,實習,兼職",
     "jobSkills":[],
-    "jobLevel":"經理,主管,實習生,專案經理,初階,中級,資深"
+    "jobLevel":"經理,主管,實習生,專案經理,初階,中級,資深",
+    "TokenIsEmpty":"Token 不能為空值 , 請檢查 headers 參數",
+    "TokenIsNotValid":"Token 驗證錯誤"
 }

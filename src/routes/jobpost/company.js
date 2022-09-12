@@ -13,24 +13,16 @@ const collectionName ='Company';
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
 
-
-    // const schema = {
-    //     body: bodyJsonSchema,
-    //     querystring: queryStringJsonSchema, // (或) query: queryStringJsonSchema
-    //     params: paramsJsonSchema, //formdata 場合可以使用
-    //     headers: headersJsonSchema
-    // }
-
-    const updateCompanyIconSchma = {
-        // body: fluent.object().prop('companyName', fluent.string().minLength(6).maxLength(40).required())
-                            // .prop('account', fluent.string().minLength(6).maxLength(40).required())
-                            // .prop('password', fluent.string().minLength(6).maxLength(30).required())
-                            // .prop('confirmPassword', fluent.string().minLength(6).maxLength(30).required())
-                            // .prop('companyDescription', fluent.string().required())
-                            // .prop('mail', fluent.string().format(fluent.FORMATS.EMAIL).required()),
-    }
-
-    fastify.post('/settingCompanyIcon',{schema:updateCompanyIconSchma}, async (request, reply) => {
+    fastify.post('/settingCompanyIcon',{
+        schema:{
+            // body: fluent.object().prop('companyName', fluent.string().minLength(6).maxLength(40).required())
+                                // .prop('account', fluent.string().minLength(6).maxLength(40).required())
+                                // .prop('password', fluent.string().minLength(6).maxLength(30).required())
+                                // .prop('confirmPassword', fluent.string().minLength(6).maxLength(30).required())
+                                // .prop('companyDescription', fluent.string().required())
+                                // .prop('mail', fluent.string().format(fluent.FORMATS.EMAIL).required()),
+        }
+    }, async (request, reply) => {
         const data = await request.file();
         const fields = Object.keys(data.fields);
         // console.log(fields)

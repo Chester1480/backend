@@ -49,14 +49,28 @@ module.exports = async function (fastify, options) {
     // console.log(await osLocale());// zh-CN 可以得知 系統使用的語言
     // #endregion
     try {
+      const i18n = fastify.i18n;
       await middleware(request, reply); // middleware 先處理 過濾IP , 分析資料 等工作
-      
       const apiPrefix = requestUrl[1];
       const routeFunction = requestUrl[3];
       if(apiPrefix === "jobpost"){
         //登入 註冊 不需要token驗證
         if(routeFunction !=="registerCompany" || routeFunction !=="loginCompany"){
-          console.log(url);
+          // console.log(headers.authorization);
+          const token = headers.authorization.split(' ')[1];
+          //驗證碼空值
+          if(!token) return reply.send({
+            message:i18n.t('TokenIsEmpty') ,
+            status:true,
+            data:{}
+          });
+          const isValid = await jwtverify(token);
+          //驗證錯誤
+          if(!isValid)return reply.send({ 
+            message:i18n.t('TokenIsNotValid') ,
+            status:true,
+            data:{}
+          });
         }
       }
       // if(apiPrefix !== "assets"){

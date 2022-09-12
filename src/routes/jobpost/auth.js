@@ -4,7 +4,8 @@ const { mongo } = require("../../service/share/database/databasepackage");
 const { encryptJs,nodemailerJs,momentJs } = require('../../service/share/lib/libpackage');
 
 module.exports = async function (fastify, options) {
-
+    const i18n = fastify.i18n;
+    
     fastify.post('/genToken', async (request, reply) => {
         console.log(fastify);
         const {} = request.body;

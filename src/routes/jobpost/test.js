@@ -2,6 +2,7 @@ const { encryptJs,nodemailerJs,momentJs } = require('../../service/share/lib/lib
 const fluent = require('fluent-json-schema');
 
 module.exports = async function (fastify, options) {
+    const i18n = fastify.i18n;
 
     //範例
     fastify.post('/samepleApi',{
