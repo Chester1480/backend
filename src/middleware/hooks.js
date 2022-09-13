@@ -54,8 +54,14 @@ module.exports = async function (fastify, options) {
       const apiPrefix = requestUrl[1];
       const routeFunction = requestUrl[3];
       if(apiPrefix === "jobpost"){
-        //登入 註冊 不需要token驗證
-        if(routeFunction !=="registerCompany" || routeFunction !=="loginCompany"){
+        
+        const routeMap = new Map({//不需要token驗證的路由
+          registerCompany:"registerCompany",
+          loginCompany:"loginCompany",
+          testAuth:"testAuth",
+        });
+        
+        if(!routeMap.has(routeFunction)){
           // console.log(headers.authorization);
           const token = headers.authorization.split(' ')[1];
           //驗證碼空值

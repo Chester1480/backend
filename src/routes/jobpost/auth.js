@@ -3,13 +3,37 @@ const { jwtverify , exportJwtsignfy } = require('../../service/srp/auth/auth');
 const { mongo } = require("../../service/share/database/databasepackage");
 const { encryptJs,nodemailerJs,momentJs } = require('../../service/share/lib/libpackage');
 
+const domain = require('config').get('domain');
+const Ajv = require("ajv");
+const ajv = new Ajv();
+
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
 
-    fastify.post('/genToken', async (request, reply) => {
-        console.log(fastify);
-        const {} = request.body;
-        reply.send("sssss");
+    fastify.post('/testAuth', async (request, reply) => {
+        const data = request.body;
+        console.log(data);
+
+        const schema = {
+            type: "object",
+            properties: {
+              foo: { type: "integer" },
+              bar: { type: "string" }
+            },
+            required: ["foo"],
+            additionalProperties: false,
+        }
+          
+        const validate = ajv.compile(schema)
+        const valid = validate(data)
+        if (!valid) return reply.send({
+            message: validate.errors,
+            status:true,
+            data:{}
+        });
+
+
+        return reply.send("sssss");
     })
 
     fastify.post('/registerCompany',{
@@ -73,7 +97,7 @@ module.exports = async function (fastify, options) {
         }
         const secretKey = "123";
         const hashData = await encryptJs.encryptAES(parameters,secretKey);
-        const url = `http://localhost:3100/auth/verifyCode?code=${hashData}`;
+        const url = domain+`auth/verifyCode?code=${hashData}`;
         await sendMail(mail,'驗證帳號信件',url);
 
         let response ;
@@ -204,7 +228,7 @@ module.exports = async function (fastify, options) {
         //更新狀態
         const isUpdate = await mongo.updateOne(collectionName ,{ mail:userData.mail } ,{isValid:true})
         if(isUpdate){
-            return reply.redirect('http://localhost:3100/auth/loginCompany')
+            return reply.redirect(domain+'auth/loginCompany')
         }else{
             return reply.send({
                 message: '驗證失敗', //TODO 需要多國語系
