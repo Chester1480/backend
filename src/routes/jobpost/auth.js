@@ -11,8 +11,7 @@ module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
 
     fastify.post('/testAuth', async (request, reply) => {
-        const data = request.body;
-        console.log(data);
+        const data = request.query;
 
         const schema = {
             type: "object",

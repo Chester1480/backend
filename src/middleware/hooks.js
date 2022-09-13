@@ -54,13 +54,12 @@ module.exports = async function (fastify, options) {
       const apiPrefix = requestUrl[1];
       const routeFunction = requestUrl[3];
       if(apiPrefix === "jobpost"){
-        
-        const routeMap = new Map({//不需要token驗證的路由
-          registerCompany:"registerCompany",
-          loginCompany:"loginCompany",
-          testAuth:"testAuth",
-        });
-        
+       
+        const routeMap = new Map(); //不需要token驗證的路由
+        routeMap.set('registerCompany', 'registerCompany');
+        routeMap.set('loginCompany', 'loginCompany');
+        routeMap.set('testAuth', 'testAuth');
+
         if(!routeMap.has(routeFunction)){
           // console.log(headers.authorization);
           const token = headers.authorization.split(' ')[1];
