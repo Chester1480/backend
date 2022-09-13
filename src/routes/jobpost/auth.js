@@ -5,7 +5,7 @@ const { encryptJs,nodemailerJs,momentJs } = require('../../service/share/lib/lib
 
 module.exports = async function (fastify, options) {
     const i18n = fastify.i18n;
-    
+
     fastify.post('/genToken', async (request, reply) => {
         console.log(fastify);
         const {} = request.body;
@@ -15,7 +15,6 @@ module.exports = async function (fastify, options) {
     fastify.post('/registerCompany',{
         schema:{
             body: fluent.object().prop('companyName', fluent.string().minLength(6).maxLength(40).required())
-                                .prop('account', fluent.string().minLength(6).maxLength(40).required())
                                 .prop('password', fluent.string().minLength(6).maxLength(30).required())
                                 .prop('confirmPassword', fluent.string().minLength(6).maxLength(30).required())
                                 .prop('companyDescription', fluent.string().required())
@@ -47,10 +46,11 @@ module.exports = async function (fastify, options) {
 
         if(!icon){
             // icon = default pic
+            icon = null;
         }
 
         const data = {
-            icon:null,//創建時設定default
+            icon,//創建時設定default
             companyPhoto:[],//公司環境照片
             companyPruductPhoto:[],//公司產品照片
             payOutTime:null,
@@ -71,8 +71,9 @@ module.exports = async function (fastify, options) {
             data,
             expiredTime:momentJs.getNowTime()
         }
+        const secretKey = "123";
         const hashData = await encryptJs.encryptAES(parameters,secretKey);
-        const url = `http://localhost:3100/company/verifyCode?code=${hashData}`;
+        const url = `http://localhost:3100/auth/verifyCode?code=${hashData}`;
         await sendMail(mail,'驗證帳號信件',url);
 
         let response ;
@@ -203,14 +204,10 @@ module.exports = async function (fastify, options) {
         //更新狀態
         const isUpdate = await mongo.updateOne(collectionName ,{ mail:userData.mail } ,{isValid:true})
         if(isUpdate){
-            return reply.send({
-                message: '更新成功', //TODO 需要多國語系
-                status:true,
-                data:{}
-            }); 
+            return reply.redirect('http://localhost:3100/auth/loginCompany')
         }else{
             return reply.send({
-                message: '更新失敗', //TODO 需要多國語系
+                message: '驗證失敗', //TODO 需要多國語系
                 status:false,
                 data:{}
             }); 
